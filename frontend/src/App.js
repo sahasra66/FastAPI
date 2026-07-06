@@ -48,10 +48,12 @@ function App() {
     setLoading(true);
     try {
       const res = await api.get("/products");
+      console.log("API Response:", res.data, "Type:", typeof res.data);
       const data = Array.isArray(res.data) ? res.data : [];
       setProducts(data);
       setError("");
     } catch (err) {
+      console.error("API Error:", err);
       setError("Failed to fetch products");
       setProducts([]);
     }
@@ -64,10 +66,12 @@ function App() {
       setLoading(true);
       try {
         const res = await api.get("/products");
+        console.log("Initial API Response:", res.data, "Type:", typeof res.data);
         const data = Array.isArray(res.data) ? res.data : [];
         setProducts(data);
         setError("");
       } catch (err) {
+        console.error("Initial Fetch Error:", err);
         setError("Failed to fetch products");
         setProducts([]);
       }
