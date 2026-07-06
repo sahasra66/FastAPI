@@ -54,6 +54,7 @@ def greet():
     }
 
 @app.get("/products")
+@app.get("/api/products")
 def getAllProducts():
     try:
         response = supabase.table("products").select('*').execute()
@@ -62,6 +63,7 @@ def getAllProducts():
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.get("/product/{id}")
+@app.get("/api/product/{id}")
 def get_product_by_id(id: int):
     try:
         response = supabase.table("products").select('*').eq("id", id).execute()
@@ -72,6 +74,7 @@ def get_product_by_id(id: int):
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.post("/products")
+@app.post("/api/products")
 def add_product(product: Product):
     try:
         product_dict = product.dict()
@@ -81,6 +84,7 @@ def add_product(product: Product):
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.put("/products/{id}")
+@app.put("/api/products/{id}")
 def update_product(id: int, product: Product):
     try:
         product_dict = product.dict()
@@ -92,6 +96,7 @@ def update_product(id: int, product: Product):
         return JSONResponse(status_code=500, content={"error": str(e)})
 
 @app.delete("/products/{id}")
+@app.delete("/api/products/{id}")
 def delete_product(id: int):
     try:
         response = supabase.table("products").delete().eq("id", id).execute()
