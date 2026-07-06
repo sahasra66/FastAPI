@@ -3,20 +3,15 @@
   "builds": [
     {
       "src": "api/index.py",
-      "use": "@vercel/python"
+      "use": "@vercel/python",
+      "config": {
+        "pythonVersion": "3.11"
+      }
     }
   ],
   "routes": [
     {
-      "src": "/api/(.*)",
-      "dest": "/api/index.py"
-    },
-    {
-      "src": "/products(.*)",
-      "dest": "/api/index.py"
-    },
-    {
-      "src": "/product/(.*)",
+      "src": "/(.*)",
       "dest": "/api/index.py"
     }
   ]
