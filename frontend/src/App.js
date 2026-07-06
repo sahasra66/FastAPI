@@ -48,8 +48,21 @@ function App() {
     setLoading(true);
     try {
       const res = await api.get("/products");
-      console.log("API Response:", res.data, "Type:", typeof res.data);
-      const data = Array.isArray(res.data) ? res.data : [];
+      console.log("=== API Response Debug ===");
+      console.log("Full Response:", res);
+      console.log("res.data:", res.data);
+      console.log("Type of res.data:", typeof res.data);
+      console.log("Is Array:", Array.isArray(res.data));
+      console.log("res.data keys:", Object.keys(res.data || {}));
+
+      let data = [];
+      if (Array.isArray(res.data)) {
+        data = res.data;
+      } else if (res.data && typeof res.data === 'object' && res.data.data && Array.isArray(res.data.data)) {
+        data = res.data.data;
+      }
+
+      console.log("Final data to set:", data);
       setProducts(data);
       setError("");
     } catch (err) {
@@ -66,8 +79,20 @@ function App() {
       setLoading(true);
       try {
         const res = await api.get("/products");
-        console.log("Initial API Response:", res.data, "Type:", typeof res.data);
-        const data = Array.isArray(res.data) ? res.data : [];
+        console.log("=== Initial Fetch Debug ===");
+        console.log("Full Response:", res);
+        console.log("res.data:", res.data);
+        console.log("Type of res.data:", typeof res.data);
+        console.log("Is Array:", Array.isArray(res.data));
+
+        let data = [];
+        if (Array.isArray(res.data)) {
+          data = res.data;
+        } else if (res.data && typeof res.data === 'object' && res.data.data && Array.isArray(res.data.data)) {
+          data = res.data.data;
+        }
+
+        console.log("Final data to set:", data);
         setProducts(data);
         setError("");
       } catch (err) {
