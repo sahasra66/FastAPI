@@ -47,11 +47,13 @@ function App() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/products/");
-      setProducts(res.data);
+      const res = await api.get("/products");
+      const data = Array.isArray(res.data) ? res.data : [];
+      setProducts(data);
       setError("");
     } catch (err) {
       setError("Failed to fetch products");
+      setProducts([]);
     }
     setLoading(false);
   };
@@ -61,11 +63,13 @@ function App() {
     const run = async () => {
       setLoading(true);
       try {
-        const res = await api.get("/products/");
-        setProducts(res.data);
+        const res = await api.get("/products");
+        const data = Array.isArray(res.data) ? res.data : [];
+        setProducts(data);
         setError("");
       } catch (err) {
         setError("Failed to fetch products");
+        setProducts([]);
       }
       setLoading(false);
     };
@@ -84,23 +88,25 @@ function App() {
 
   // Derived list with filter and sorting
   const filteredProducts = useMemo(() => {
-    let filtered = products;
-    
+    // Ensure products is an array
+    const productList = Array.isArray(products) ? products : [];
+    let filtered = productList;
+
     // Apply filter
     const q = filter.trim().toLowerCase();
     if (q) {
-      filtered = products.filter((p) =>
+      filtered = productList.filter((p) =>
         String(p.id).includes(q) ||
         p.name?.toLowerCase().includes(q) ||
         p.description?.toLowerCase().includes(q)
       );
     }
-    
+
     // Apply sorting
     return filtered.sort((a, b) => {
       let aVal = a[sortField];
       let bVal = b[sortField];
-      
+
       // Handle numeric fields
       if (sortField === "id" || sortField === "price" || sortField === "quantity") {
         aVal = Number(aVal);
@@ -110,7 +116,7 @@ function App() {
         aVal = String(aVal).toLowerCase();
         bVal = String(bVal).toLowerCase();
       }
-      
+
       if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
       if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
       return 0;
