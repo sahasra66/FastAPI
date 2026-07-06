@@ -2,16 +2,19 @@ import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-import sys
-
-# Add parent directory to path to import from root
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-from models import Product
+from pydantic import BaseModel
 from supabase import create_client, Client
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# Define Product model here for Vercel compatibility
+class Product(BaseModel):
+    id: int
+    name: str
+    description: str
+    quantity: int
+    price: float
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
@@ -39,7 +42,16 @@ app.add_middleware(
 
 @app.get("/")
 def greet():
-    return {"message": "Welcome to Fast API Course"}
+    return {
+        "message": "Welcome to FastAPI Course",
+        "endpoints": {
+            "products": "/products",
+            "product_by_id": "/product/{id}",
+            "add_product": "POST /products",
+            "update_product": "PUT /products/{id}",
+            "delete_product": "DELETE /products/{id}"
+        }
+    }
 
 @app.get("/products")
 def getAllProducts():
