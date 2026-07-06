@@ -92,39 +92,56 @@ function App() {
 
   // Derived list with filter and sorting
   const filteredProducts = useMemo(() => {
-    // Ensure products is an array
-    const productList = Array.isArray(products) ? products : [];
-    let filtered = productList;
-
-    // Apply filter
-    const q = filter.trim().toLowerCase();
-    if (q) {
-      filtered = productList.filter((p) =>
-        String(p.id).includes(q) ||
-        p.name?.toLowerCase().includes(q) ||
-        p.description?.toLowerCase().includes(q)
-      );
-    }
-
-    // Apply sorting
-    return filtered.sort((a, b) => {
-      let aVal = a[sortField];
-      let bVal = b[sortField];
-
-      // Handle numeric fields
-      if (sortField === "id" || sortField === "price" || sortField === "quantity") {
-        aVal = Number(aVal);
-        bVal = Number(bVal);
-      } else {
-        // Handle string fields
-        aVal = String(aVal).toLowerCase();
-        bVal = String(bVal).toLowerCase();
+    try {
+      // Ensure products is an array - extra defensive
+      if (!products || typeof products !== 'object' || !Array.isArray(products)) {
+        return [];
       }
 
-      if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
-      if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
-      return 0;
-    });
+      let filtered = [...products]; // Create a copy to avoid mutations
+
+      // Apply filter
+      const q = filter.trim().toLowerCase();
+      if (q) {
+        filtered = filtered.filter((p) =>
+          String(p?.id || '').includes(q) ||
+          String(p?.name || '').toLowerCase().includes(q) ||
+          String(p?.description || '').toLowerCase().includes(q)
+        );
+      }
+
+      // Apply sorting - with safety checks
+      if (!Array.isArray(filtered)) {
+        return [];
+      }
+
+      return filtered.sort((a, b) => {
+        try {
+          let aVal = a?.[sortField];
+          let bVal = b?.[sortField];
+
+          // Handle numeric fields
+          if (sortField === "id" || sortField === "price" || sortField === "quantity") {
+            aVal = Number(aVal) || 0;
+            bVal = Number(bVal) || 0;
+          } else {
+            // Handle string fields
+            aVal = String(aVal || '').toLowerCase();
+            bVal = String(bVal || '').toLowerCase();
+          }
+
+          if (aVal < bVal) return sortDirection === "asc" ? -1 : 1;
+          if (aVal > bVal) return sortDirection === "asc" ? 1 : -1;
+          return 0;
+        } catch (e) {
+          console.error('Sort error:', e);
+          return 0;
+        }
+      });
+    } catch (e) {
+      console.error('FilteredProducts error:', e);
+      return [];
+    }
   }, [products, filter, sortField, sortDirection]);
 
   // Handle form input
