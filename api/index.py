@@ -18,6 +18,7 @@ class Product(BaseModel):
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+FRONTEND_URL = os.environ.get("FRONTEND_URL", "")
 
 if not SUPABASE_URL or not SUPABASE_KEY:
     raise ValueError("SUPABASE_URL and SUPABASE_KEY environment variables are required")
@@ -26,18 +27,23 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 app = FastAPI()
 
-# Update CORS to allow Vercel domain
+# CORS configuration - allow both local development and production
+allow_origins_list = [
+    "http://localhost:3000",
+    "http://localhost:3001",
+    "http://localhost:8000",
+    "http://localhost:8080",
+]
+
+if FRONTEND_URL:
+    allow_origins_list.append(FRONTEND_URL)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "https://*.vercel.app",
-        "*"
-    ],
+    allow_origins=allow_origins_list,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_credentials=True
 )
 
 @app.get("/")
