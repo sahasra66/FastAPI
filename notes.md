@@ -13,4 +13,3 @@ Representaional state transfer
 
 
 superbase password : 
-KFlD6lGWnlcuBSq5
